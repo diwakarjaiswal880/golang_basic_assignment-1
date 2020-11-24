@@ -2,45 +2,37 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"sync"
-	"time"
 )
 
-var waitGroup sync.WaitGroup
-var data chan string
-
-func main() {
-	fmt.Println("Starting the application...")
-	data = make(chan string)
-
-	for i := 0; i < 3; i++ {
-		waitGroup.Add(1)
-		go worker()
+func EvenNumbersTillEight(even chan int) {
+	i := 2
+	for i < 9 {
+		even <- i
+		i = i + 2
 	}
-
-	for i := 0; i < 10; i++ {
-		data <- ("Testing " + strconv.Itoa(i))
-	}
-
-	close(data)
-
-	waitGroup.Wait()
+	close(even)
 }
 
-func worker() {
-	fmt.Println("Goroutine worker is now starting...")
-	defer func() {
-		fmt.Println("Destroying the worker...")
-		waitGroup.Done()
-	}()
+func OddNumberTillEight(odd chan int) {
+	i := 1
+	for i < 9 {
+		odd <- i
+		i = i + 2
+	}
+	close(odd)
+}
+
+func main() {
+	even := make(chan int)
+	odd := make(chan int)
+	go EvenNumbersTillEight(even)
+	go OddNumberTillEight(odd)
 	for {
-		value, ok := <-data
-		if !ok {
-			fmt.Println("The channel is closed!")
+		even, ok1 := <-even
+		odd, ok2 := <-odd
+		if ok1 == false && ok2 == false {
 			break
 		}
-		fmt.Println(value)
-		time.Sleep(time.Second * 1)
+		fmt.Println("Received ", even, ok1, odd, ok2)
 	}
 }

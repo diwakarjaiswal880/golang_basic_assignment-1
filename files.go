@@ -10,7 +10,7 @@ func main() {
    if err != nil {  
       log.Fatal(err)  
    }  
-   file.WriteString("hi my name is himanshu kumar tiwari")  
+   file.WriteString("hi my name is Diwakar Jaiswal")  
    file.Close()  
    stream, err:= ioutil.ReadFile("file.txt")  
    if err != nil {  
